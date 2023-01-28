@@ -307,6 +307,10 @@ class BottomSheet extends StatelessWidget {
                 fontSize: 25,
                 fontWeight: FontWeight.bold,
                 color: Color(0xff6C97FB),
+                letterSpacing: 1.5)),Text(Country,style: GoogleFonts.lato(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: Color(0xff6C97FB),
                 letterSpacing: 1.5)),
 
           ],
