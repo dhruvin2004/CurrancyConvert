@@ -7,4 +7,7 @@ class Global
   ];
 
   static String Currancy = "";
+
+  static String FirstCountry = "First Coutry";
+  static String SecondCountry = "Secound Coutry";
 }

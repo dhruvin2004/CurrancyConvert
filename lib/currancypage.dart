@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'global.dart';
 
@@ -13,6 +14,13 @@ class CurrencyPage extends StatefulWidget {
 }
 
 class _CurrencyPageState extends State<CurrencyPage> {
+  @override
+  void initState() {
+    // TODO: implement initState
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
@@ -77,20 +85,27 @@ class _CurrencyPageState extends State<CurrencyPage> {
                       ),
                     ),
                   ).toList(),
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(color: Colors.black12, blurRadius: 25),
-                      ],
+                  GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        Global.Currancy += ".";
+                      });
+                    },
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(color: Colors.black12, blurRadius: 25),
+                        ],
+                      ),
+                      alignment: Alignment.center,
+                      child: Text('.',
+                          style: GoogleFonts.lato(
+                              fontSize: 25,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff6C97FB),
+                              letterSpacing: 1.5)),
                     ),
-                    alignment: Alignment.center,
-                    child: Text('.',
-                        style: GoogleFonts.lato(
-                            fontSize: 25,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xff6C97FB),
-                            letterSpacing: 1.5)),
                   ),
                   GestureDetector(
                     onTap: () {
@@ -102,7 +117,10 @@ class _CurrencyPageState extends State<CurrencyPage> {
                       decoration: const BoxDecoration(
                         color: Colors.white,
                         boxShadow: [
-                          BoxShadow(color: Colors.black12, blurRadius: 25),
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 25,
+                          ),
                         ],
                       ),
                       alignment: Alignment.center,
@@ -110,7 +128,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                           style: GoogleFonts.lato(
                               fontSize: 25,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xff6C97FB),
+                              color: const Color(0xff6C97FB),
                               letterSpacing: 1.5)),
                     ),
                   ),
@@ -130,7 +148,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(15),
                 color: Colors.white,
-                boxShadow: [
+                boxShadow: const [
                   BoxShadow(
                     color: Colors.black12,
                     blurRadius: 35,
@@ -143,7 +161,22 @@ class _CurrencyPageState extends State<CurrencyPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text("INDIA"),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            showMaterialModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => BottomSheet(Country: Global.FirstCountry),
+                            );
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Text("INDIA"),
+                          ],
+                        ),
+                      ),
                       Container(
                         height: 50,
                         width: 250,
@@ -153,19 +186,36 @@ class _CurrencyPageState extends State<CurrencyPage> {
                           border: Border.all(color: Colors.blue.shade200),
                           color: Color(0xffEEF2FF),
                         ),
-                        child: Text("${Global.Currancy}",
-                            style: GoogleFonts.lato(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xff6C97FB),
-                                letterSpacing: 1.5),),
+                        child: Text(
+                          "${Global.Currancy}",
+                          style: GoogleFonts.lato(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff6C97FB),
+                              letterSpacing: 1.5),
+                        ),
                       ),
                     ],
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text("INDIA"),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            showMaterialModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) => BottomSheet(Country: Global.SecondCountry),
+                            );
+                          });
+                        },
+                        child: Row(
+                          children: [
+                            Text("INDIA"),
+                          ],
+                        ),
+                      ),
                       Container(
                         height: 50,
                         width: 250,
@@ -185,11 +235,14 @@ class _CurrencyPageState extends State<CurrencyPage> {
                         color: Colors.blue,
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      child: Text("Convert",style: GoogleFonts.lato(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1.5),),
+                      child: Text(
+                        "Convert",
+                        style: GoogleFonts.lato(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            letterSpacing: 1.5),
+                      ),
                     ),
                   ),
                 ],
@@ -198,6 +251,67 @@ class _CurrencyPageState extends State<CurrencyPage> {
           ),
         ),
       ]),
+    );
+  }
+}
+
+class BottomSheet extends StatelessWidget {
+  String Country = "";
+
+   BottomSheet({
+    super.key,
+    required this.Country,
+
+  });
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    // Scaffold is a layout for
+    // the major Material Components.
+    double h = MediaQuery.of(context).size.height;
+    double w = MediaQuery.of(context).size.width;
+    return SingleChildScrollView(
+      controller: ModalScrollController.of(context),
+      child: Container(
+        height: h - 200,
+        width: w,
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(30),
+          ),
+          color: Colors.white,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                margin: EdgeInsets.only(top: 10,bottom: 10),
+                height: 8,
+                width: 100,
+                decoration: BoxDecoration(
+                    color: Colors.grey, borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+
+            Text("Select Country",style: GoogleFonts.lato(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: Color(0xff6C97FB),
+                letterSpacing: 1.5)),
+            Text(Country,style: GoogleFonts.lato(
+                fontSize: 25,
+                fontWeight: FontWeight.bold,
+                color: Color(0xff6C97FB),
+                letterSpacing: 1.5)),
+
+          ],
+        ),
+      ),
     );
   }
 }
