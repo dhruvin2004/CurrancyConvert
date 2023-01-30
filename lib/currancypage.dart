@@ -1,8 +1,12 @@
-import 'dart:ui';
+import 'dart:convert';
 
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flag/flag_enum.dart';
+import 'package:flag/flag_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:http/http.dart' as http;
 
 import 'global.dart';
 
@@ -14,13 +18,15 @@ class CurrencyPage extends StatefulWidget {
 }
 
 class _CurrencyPageState extends State<CurrencyPage> {
-  @override
+
+   double result = 0.0;
+
+   @override
   void initState() {
     // TODO: implement initState
-
     super.initState();
-  }
 
+  }
   @override
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
@@ -33,7 +39,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
             Container(
               height: h / 3,
               width: w,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Color(0xff6D98FD),
               ),
               child: SafeArea(
@@ -66,7 +72,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                     (e) => GestureDetector(
                       onTap: () {
                         setState(() {
-                          Global.Currancy += e.toString();
+                          Global.Currancy += e.toString() as int;
                         });
                       },
                       child: Container(
@@ -85,32 +91,32 @@ class _CurrencyPageState extends State<CurrencyPage> {
                       ),
                     ),
                   ).toList(),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     setState(() {
+                  //       Global.Currancy +=.;
+                  //     });
+                  //   },
+                  //   child: Container(
+                  //     decoration: const BoxDecoration(
+                  //       color: Colors.white,
+                  //       boxShadow: [
+                  //         BoxShadow(color: Colors.black12, blurRadius: 25),
+                  //       ],
+                  //     ),
+                  //     alignment: Alignment.center,
+                  //     child: Text('.',
+                  //         style: GoogleFonts.lato(
+                  //             fontSize: 25,
+                  //             fontWeight: FontWeight.bold,
+                  //             color: Color(0xff6C97FB),
+                  //             letterSpacing: 1.5)),
+                  //   ),
+                  // ),
                   GestureDetector(
                     onTap: () {
                       setState(() {
-                        Global.Currancy += ".";
-                      });
-                    },
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(color: Colors.black12, blurRadius: 25),
-                        ],
-                      ),
-                      alignment: Alignment.center,
-                      child: Text('.',
-                          style: GoogleFonts.lato(
-                              fontSize: 25,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xff6C97FB),
-                              letterSpacing: 1.5)),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        Global.Currancy = "";
+                        Global.Currancy = 0;
                       });
                     },
                     child: Container(
@@ -167,13 +173,26 @@ class _CurrencyPageState extends State<CurrencyPage> {
                             showMaterialModalBottomSheet(
                               context: context,
                               backgroundColor: Colors.transparent,
-                              builder: (context) => BottomSheet(Country: Global.FirstCountry),
+                              builder: (context) =>
+                                  BottomSheetT0(),
                             );
                           });
                         },
                         child: Row(
                           children: [
-                            Text("INDIA"),
+                            Container(
+                              height: 20,
+                              margin: EdgeInsets.only(right: 5),
+                              width: 30,
+                              child:  Flag.fromString(
+                                Global.to,
+                                height: 10,
+                                width: 100,
+                                fit: BoxFit.fill,
+                                replacement: Text('ACC not found'),
+                              ),
+                            ),
+                            AutoSizeText("${Global.toName}",maxLines: 2,),
                           ],
                         ),
                       ),
@@ -187,7 +206,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                           color: Color(0xffEEF2FF),
                         ),
                         child: Text(
-                          "${Global.Currancy}",
+                          Global.Currancy.toString(),
                           style: GoogleFonts.lato(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -206,27 +225,54 @@ class _CurrencyPageState extends State<CurrencyPage> {
                             showMaterialModalBottomSheet(
                               context: context,
                               backgroundColor: Colors.transparent,
-                              builder: (context) => BottomSheet(Country: Global.SecondCountry),
+                              builder: (context) => BottomSheetT0From(),
                             );
                           });
                         },
                         child: Row(
                           children: [
-                            Text("INDIA"),
+                            Container(
+                              height: 20,
+                              margin: EdgeInsets.only(right: 5),
+                              width: 30,
+                              child:  Flag.fromString(
+                                Global.from,
+                                height: 10,
+                                width: 100,
+                                fit: BoxFit.fill,
+                                replacement: Text('ACC not found'),
+                              ),
+                            ),
+                            AutoSizeText("${Global.fromName}",maxLines: 2,),
                           ],
                         ),
                       ),
                       Container(
                         height: 50,
                         width: 250,
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        alignment: Alignment.centerRight,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.blue.shade200),
                           color: Color(0xffEEF2FF),
+                        ),
+                        child: Text(
+                          "${result}",
+                          style: GoogleFonts.lato(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff6C97FB),
+                              letterSpacing: 1.5),
                         ),
                       ),
                     ],
                   ),
                   GestureDetector(
+                    onTap: (){
+                     setState(() {
+                       getCityCurrency();
+                     });
+                    },
                     child: Container(
                       height: 40,
                       width: 150,
@@ -253,26 +299,49 @@ class _CurrencyPageState extends State<CurrencyPage> {
       ]),
     );
   }
+  getCityCurrency() async {
+    var uri =
+        'https://api.apilayer.com/exchangerates_data/convert?to=${Global.toName}&from=${Global.fromName}&amount=500&apikey=oG8nENxdrhft11OAMy5xkQbtkY8c4w9I';
+    var url = Uri.parse(uri);
+    var response = await http.get(url,headers: {"Accept": "application/json"});
+    if (response.statusCode == 200) {
+      var decodeData = json.decode(response.body);
+      setState(() {
+        result = decodeData['result'];
+      });
+      print(decodeData);
+    } else {
+      print(response.statusCode);
+    }
+  }
+
+  // updateUI(var decodedData) {
+  //   setState(() {
+  //     if (decodedData == null) {
+  //       Result = 0;
+  //
+  //     } else {
+  //       Result = decodedData['result'];
+  //
+  //     }
+  //   });
+  // }
 }
 
-class BottomSheet extends StatelessWidget {
-  String Country = "";
 
-   BottomSheet({
-    super.key,
-    required this.Country,
-
-  });
-
-
+class BottomSheetT0 extends StatefulWidget {
+  const BottomSheetT0({Key? key}) : super(key: key);
 
   @override
+  State<BottomSheetT0> createState() => _BottomSheetT0State();
+}
+
+class _BottomSheetT0State extends State<BottomSheetT0> {
+  @override
   Widget build(BuildContext context) {
-    // Scaffold is a layout for
-    // the major Material Components.
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
-    return SingleChildScrollView(
+    return SingleChildScrollView  (
       controller: ModalScrollController.of(context),
       child: Container(
         height: h - 200,
@@ -290,32 +359,145 @@ class BottomSheet extends StatelessWidget {
             Align(
               alignment: Alignment.topCenter,
               child: Container(
-                margin: EdgeInsets.only(top: 10,bottom: 10),
+                margin: EdgeInsets.only(top: 10, bottom: 10),
                 height: 8,
                 width: 100,
                 decoration: BoxDecoration(
-                    color: Colors.grey, borderRadius: BorderRadius.circular(10)),
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(10)),
               ),
             ),
+            Text("Select Country",
+                style: GoogleFonts.lato(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff6C97FB),
+                    letterSpacing: 1.5)),
+            ...Global.Countrys.map((e) => GestureDetector(
+              onTap: (){
+                setState(() {
+                  Global.to = e['flag'];
+                  Global.toName = e['name'];
+                  Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => CurrencyPage()));
+                });
+              },
+              child: Container(
+                margin: EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.grey.shade200,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      height: 40,
+                      margin: EdgeInsets.only(right: 10),
+                      width: 60,
+                      child:  Flag.fromString(
+                        '${e['flag']}',
+                        height: 10,
+                        width: 100,
+                        fit: BoxFit.fill,
+                        replacement: Text('ACC not found'),
+                      ),
+                    ),
+                    Text(e['name'],style: GoogleFonts.lato(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.black),),
+                  ],
+                ),
+              ),
+            ),
+            ).toList()
+          ],
+        ),
+      ),
+    );
+  }
 
-            Text("Select Country",style: GoogleFonts.lato(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: Color(0xff6C97FB),
-                letterSpacing: 1.5)),
-            Text(Country,style: GoogleFonts.lato(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: Color(0xff6C97FB),
-                letterSpacing: 1.5)),Text(Country,style: GoogleFonts.lato(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-                color: Color(0xff6C97FB),
-                letterSpacing: 1.5)),
+}
 
+
+class BottomSheetT0From extends StatefulWidget {
+  const BottomSheetT0From({Key? key}) : super(key: key);
+
+  @override
+  State<BottomSheetT0From> createState() => _BottomSheetT0FromState();
+}
+
+class _BottomSheetT0FromState extends State<BottomSheetT0From> {
+  @override
+  Widget build(BuildContext context) {
+    double h = MediaQuery.of(context).size.height;
+    double w = MediaQuery.of(context).size.width;
+    return SingleChildScrollView  (
+      controller: ModalScrollController.of(context),
+      child: Container(
+        height: h - 200,
+        width: w,
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(30),
+          ),
+          color: Colors.white,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: Alignment.topCenter,
+              child: Container(
+                margin: EdgeInsets.only(top: 10, bottom: 10),
+                height: 8,
+                width: 100,
+                decoration: BoxDecoration(
+                    color: Colors.grey,
+                    borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
+            Text("Select Country",
+                style: GoogleFonts.lato(
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xff6C97FB),
+                    letterSpacing: 1.5)),
+            ...Global.Countrys.map((e) => GestureDetector(
+              onTap: (){
+                setState(() {
+                  Global.from = e['flag'];
+                  Global.fromName = e['name'];
+                  Navigator.pushReplacement(context,MaterialPageRoute(builder: (context) => CurrencyPage()));
+                });
+              },
+              child: Container(
+                margin: EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.grey.shade200,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      height: 40,
+                      margin: EdgeInsets.only(right: 10),
+                      width: 60,
+                      child:  Flag.fromString(
+                        '${e['flag']}',
+                        height: 10,
+                        width: 100,
+                        fit: BoxFit.fill,
+                        replacement: Text('ACC not found'),
+                      ),
+                    ),
+                    Text(e['name'],style: GoogleFonts.lato(fontSize: 20,fontWeight: FontWeight.bold,color: Colors.black),),
+                  ],
+                ),
+              ),
+            ),
+            ).toList()
           ],
         ),
       ),
     );
   }
 }
+
