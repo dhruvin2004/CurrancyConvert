@@ -86,7 +86,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       DropdownButton(
-                        value: Global.fromName,
+                        value: Global.toName,
                         icon: const Icon(Icons.keyboard_arrow_down),
                         items: Global.Countrys.map((String items) {
                           return DropdownMenuItem(
@@ -96,7 +96,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            Global.fromName = newValue!;
+                            Global.toName = newValue!;
                           });
                         },
                       ),
@@ -134,7 +134,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       DropdownButton(
-                        value: Global.toName,
+                        value: Global.fromName,
                         icon: const Icon(Icons.keyboard_arrow_down),
                         items: Global.Countrys.map((String items) {
                           return DropdownMenuItem(
@@ -144,7 +144,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            Global.toName = newValue!;
+                            Global.fromName = newValue!;
                           });
                         },
                       ),
@@ -202,7 +202,7 @@ class _CurrencyPageState extends State<CurrencyPage> {
   }
   getCityCurrency() async {
     var uri =
-        'https://api.apilayer.com/exchangerates_data/convert?to=${Global.fromName}&from=${Global.toName}&amount=${Global.Amount.text}&apikey=oG8nENxdrhft11OAMy5xkQbtkY8c4w9I';
+        'https://api.apilayer.com/exchangerates_data/convert?to=${Global.toName}&from=${Global.fromName}&amount=${Global.Amount.text}&apikey=oG8nENxdrhft11OAMy5xkQbtkY8c4w9I';
     var url = Uri.parse(uri);
     var response = await http.get(url,headers: {"Accept": "application/json"});
     if (response.statusCode == 200) {
